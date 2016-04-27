@@ -23,7 +23,7 @@ module.exports = {
 	},
 	output: {
 		path: path.join(__dirname, 'app'),
-		filename: 'app.js'
+		filename: 'charttest.js'
 	},
 	module: {
 		loaders: [{

@@ -8,7 +8,8 @@ import Fetch from 'isomorphic-fetch';
 class App extends React.Component {
     
      componentDidMount() {
-         var sql = encodeURI('SELECT questionID, SUM(cognitive) as cognitive, SUM(affirmative) as affirmative FROM ChartTest GROUP BY questionID');
+        var sql = encodeURI('SELECT questionID, SUM(cognitive) as cognitive, SUM(affirmative) as affirmative FROM ChartTest GROUP BY questionID');
+        //http://main-1914118172.eu-west-1.elb.amazonaws.com/activities/charttest
         fetch('http://localhost:3000/api/exercise/'+sql)
             .then(function(response) {
                 if (response.status >= 400) {
@@ -43,6 +44,7 @@ class App extends React.Component {
 
 	constructor(props){
 		super(props);
+        var env = this.getEnv();
         this.state = {
                     options : ['cognitive', 'affirmative'],
                     inptype : 'radio',
@@ -51,16 +53,47 @@ class App extends React.Component {
                     type : 'Bar',
                     answers : [],
                     series: [],
-                    userID:'KAPLAY',
+                    enviroment: env,
+                    userID: this.getUser(env),
                     instanceID:'TEST01',
                     versionID:'0.1.1',
                     timeStampUTC:'1457696167',
                     ip:'1.1.1.1',
-                    enviroment:'Edx'
                 };
         this.updateSeries = this.updateSeries.bind(this);
         this.updateAnswers = this.updateAnswers.bind(this);
 	}
+    
+    getEnv(){
+        function Env(env) {
+            return window.location.href.indexOf(env) > 1;
+        }
+        switch (true) {
+            case Env("edx"):
+                return 'edx';
+                break;
+            case Env("hub"):
+                return 'hub';
+                break;
+            default:
+                return 'test';
+        }
+    }
+    
+    getUser(env){
+        switch (env) {
+            case 'edx':
+                var user = document.getElementsByClassName("account-username")[0].innerHTML;
+                return user;
+                break;
+            case 'hub':
+                return 'hub';
+                break;
+            default:
+                return 'testUser';
+                break;
+        }
+    }
   
     
     updateSeries(e){

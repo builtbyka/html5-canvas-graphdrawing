@@ -8,6 +8,7 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "connect-history-api-fallback": "^1.2.0",
     "es6-promise": "^3.1.2",
     "http-proxy": "^1.12.0",
     "isomorphic-fetch": "^2.2.1",
