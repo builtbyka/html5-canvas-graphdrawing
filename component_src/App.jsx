@@ -8,8 +8,8 @@ import Fetch from 'isomorphic-fetch';
 class App extends React.Component {
     
      componentDidMount() {
-
-        fetch('http://main-1914118172.eu-west-1.elb.amazonaws.com/activities/charttest')
+         var sql = encodeURI('SELECT questionID, SUM(cognitive) as cognitive, SUM(affirmative) as affirmative FROM ChartTest GROUP BY questionID');
+        fetch('http://localhost:3000/api/exercise/'+sql)
             .then(function(response) {
                 if (response.status >= 400) {
                     throw new Error('Bad response from server');
@@ -44,14 +44,14 @@ class App extends React.Component {
 	constructor(props){
 		super(props);
         this.state = {
-                    options : ['affirmative', 'cognitive'],
+                    options : ['cognitive', 'affirmative'],
                     inptype : 'radio',
-                    labels : ['date','movie','gift'],
+                    labels : ['date','gift','movie'],
                     graphOps : {},
                     type : 'Bar',
                     answers : [],
                     series: [],
-                    userID:'mwellss',
+                    userID:'KAPLAY',
                     instanceID:'TEST01',
                     versionID:'0.1.1',
                     timeStampUTC:'1457696167',
@@ -78,6 +78,7 @@ class App extends React.Component {
                 instanceID:this.state.instanceID,
                 versionID:this.state.versionID,
                 enviroment:this.state.enviroment}
+                // loops through the options (cog or aff in example) and maps where in array it is
                 this.state.options.forEach(function(value, i){
                     if(value === answer.value){
                         seriesOption = i;
@@ -86,12 +87,26 @@ class App extends React.Component {
                         submissionSegment[value] = 0;
                     } 
                 })
+                //loop through labels (example date, gift, movie)
                  this.state.labels.forEach(function(value, i){
                     if(value === answer.name){
                         seriesLabel = i;
                     }   
                 })
-                 seriesCopy[seriesOption][seriesLabel] += 1;
+               // if data to begin with, add 1 to it, if not push new instance to array
+                if(seriesCopy.length > 0){
+                     seriesCopy[seriesOption][seriesLabel] += 1;
+                }else{
+                     for(var j=0; j < this.state.options.length; j++){
+                         seriesCopy.push(j); 
+                         var arr = [];
+                        for(var k=0; k < this.state.labels.length; k++){
+                            arr.push(0);
+                        }
+                        seriesCopy[j] = arr;
+                    }
+                    seriesCopy[seriesOption][seriesLabel] += 1;
+                }
                  submissionSegment.questionID = answer.name;
                  submission.push(submissionSegment);
             }
@@ -103,7 +118,7 @@ class App extends React.Component {
        
         //send data
         
-        fetch('http://main-1914118172.eu-west-1.elb.amazonaws.com/activities/charttest', {
+        fetch('http://localhost:3000/api/exercise', {
         method: 'POST',
         headers: {
         'Content-Type': 'application/json'
@@ -138,7 +153,7 @@ class App extends React.Component {
 
 	render(){
 		return (
-			<div>
+			<div style={styles.body}>
                   <MatrixInput options={this.state.options} type={this.state.inptype} questions={this.state.labels} updateAnswers={this.updateAnswers} updateSeries={this.updateSeries}/>
                   <div style={styles.chart}>
                     <ChartistGraph data={this.state} options={this.state.graphOps} type={this.state.type} />
@@ -150,6 +165,10 @@ class App extends React.Component {
 }
 
 let styles = {
+    
+    body : {
+        overflow: 'auto'  
+    },
     
     chart : {
         float: 'left',
