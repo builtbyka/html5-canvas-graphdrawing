@@ -44,7 +44,7 @@ class App extends React.Component {
 
 	constructor(props){
 		super(props);
-        var env = this.getEnv();
+        let env = this.getEnv();
         this.state = {
                     options : ['cognitive', 'affirmative'],
                     inptype : 'radio',
@@ -83,7 +83,12 @@ class App extends React.Component {
     getUser(env){
         switch (env) {
             case 'edx':
-                var user = document.getElementsByClassName("account-username")[0].innerHTML;
+                let user;
+                if(document.getElementsByClassName("label-username").length > 0){
+                    user = document.getElementsByClassName("label-username")[0].innerHTML;
+                }else{
+                    user = document.getElementsByClassName("account-username")[0].innerHTML;
+                }
                 return user;
                 break;
             case 'hub':

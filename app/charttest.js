@@ -19646,7 +19646,12 @@
 	        value: function getUser(env) {
 	            switch (env) {
 	                case 'edx':
-	                    var user = document.getElementsByClassName("account-username")[0].innerHTML;
+	                    var user = void 0;
+	                    if (document.getElementsByClassName("label-username").length > 0) {
+	                        user = document.getElementsByClassName("label-username")[0].innerHTML;
+	                    } else {
+	                        user = document.getElementsByClassName("account-username")[0].innerHTML;
+	                    }
 	                    return user;
 	                    break;
 	                case 'hub':
