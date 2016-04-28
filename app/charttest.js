@@ -19567,8 +19567,7 @@
 	            var _this2 = this;
 	
 	            var sql = encodeURI('SELECT questionID, SUM(cognitive) as cognitive, SUM(affirmative) as affirmative FROM ChartTest GROUP BY questionID');
-	            //http://main-1914118172.eu-west-1.elb.amazonaws.com/activities/charttest
-	            fetch('http://localhost:3000/api/exercise/' + sql).then(function (response) {
+	            fetch('https://ib-ed.tech/api/exercise/' + sql).then(function (response) {
 	                if (response.status >= 400) {
 	                    throw new Error('Bad response from server');
 	                }
@@ -19718,7 +19717,7 @@
 	
 	            //send data
 	
-	            fetch('http://localhost:3000/api/exercise', {
+	            fetch('https://ib-ed.tech/api/exercise/', {
 	                method: 'POST',
 	                headers: {
 	                    'Content-Type': 'application/json'
