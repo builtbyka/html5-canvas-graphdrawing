@@ -19712,12 +19712,11 @@
 	            });
 	
 	            //update the page
-	
 	            this.setState({ series: seriesCopy });
 	
 	            //send data
 	
-	            fetch('https://ib-ed.tech/api/exercise/', {
+	            fetch('https://ib-ed.tech/api/exercise/ChartTest', {
 	                method: 'POST',
 	                headers: {
 	                    'Content-Type': 'application/json'
