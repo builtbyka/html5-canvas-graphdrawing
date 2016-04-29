@@ -5,4 +5,4 @@ import App from './App.jsx';
 
 
 //Render application in browser
-ReactDOM.render(<App />, document.getElementById('charttest'))
+ReactDOM.render(<App />, document.getElementById('freestyledrawing'))
