@@ -19525,7 +19525,7 @@
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
-		value: true
+	    value: true
 	});
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -19543,30 +19543,118 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
 	var App = function (_React$Component) {
-		_inherits(App, _React$Component);
+	    _inherits(App, _React$Component);
 	
-		function App(props) {
-			_classCallCheck(this, App);
+	    _createClass(App, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            this.drawing();
+	        }
+	    }, {
+	        key: 'drawing',
+	        value: function drawing() {
+	            var canvas = document.querySelector('#drawing'),
+	                ctx = canvas.getContext('2d'),
+	                sketch = document.querySelector('#sketch'),
+	                sketch_style = getComputedStyle(sketch),
+	                tool = document.getElementById('dtool').value;
+	            canvas.width = parseInt(sketch_style.getPropertyValue('width'));
+	            canvas.height = parseInt(sketch_style.getPropertyValue('height'));
+	            this.setState({ canvas: canvas, ctx: ctx });
+	            var mouse = { x: 0, y: 0 };
 	
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(App).call(this, props));
-		}
+	            /* Mouse Capturing Work */
+	            canvas.addEventListener('mousemove', function (e) {
+	                mouse.x = e.pageX - this.offsetLeft;
+	                mouse.y = e.pageY - this.offsetTop;
+	            }, false);
 	
-		_createClass(App, [{
-			key: 'render',
-			value: function render() {
-				return _react2.default.createElement(
-					'div',
-					null,
-					_react2.default.createElement(
-						'p',
-						null,
-						'Hello World'
-					)
-				);
-			}
-		}]);
+	            /* Drawing on Paint App */
+	            ctx.lineWidth = 1;
+	            ctx.lineJoin = 'round';
+	            ctx.lineCap = 'round';
+	            ctx.strokeStyle = 'black';
 	
-		return App;
+	            canvas.addEventListener('mousedown', function (e) {
+	                ctx.beginPath();
+	                ctx.moveTo(mouse.x, mouse.y);
+	
+	                canvas.addEventListener('mousemove', onPaint, false);
+	            }, false);
+	
+	            canvas.addEventListener('mouseup', function () {
+	                canvas.removeEventListener('mousemove', onPaint, false);
+	            }, false);
+	
+	            var onPaint = function onPaint() {
+	                ctx.lineTo(mouse.x, mouse.y);
+	                ctx.stroke();
+	            };
+	        }
+	    }]);
+	
+	    function App(props) {
+	        _classCallCheck(this, App);
+	
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(App).call(this, props));
+	
+	        _this.state = {
+	            canvas: '',
+	            ctx: ''
+	        };
+	        _this.clearCanvas = _this.clearCanvas.bind(_this);
+	        return _this;
+	    }
+	
+	    _createClass(App, [{
+	        key: 'clearCanvas',
+	        value: function clearCanvas() {
+	            this.state.ctx.clearRect(0, 0, this.state.canvas.width, this.state.canvas.height);
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { id: 'sketch' },
+	                _react2.default.createElement(
+	                    'label',
+	                    null,
+	                    'Drawing tool:',
+	                    _react2.default.createElement(
+	                        'select',
+	                        { id: 'dtool' },
+	                        _react2.default.createElement(
+	                            'option',
+	                            { value: 'pencil' },
+	                            'Pencil'
+	                        ),
+	                        _react2.default.createElement(
+	                            'option',
+	                            { value: 'line' },
+	                            'Line'
+	                        )
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'button',
+	                    { onClick: this.clearCanvas },
+	                    'Clear'
+	                ),
+	                _react2.default.createElement(
+	                    'canvas',
+	                    { id: 'drawing', width: '400', height: '300' },
+	                    _react2.default.createElement(
+	                        'p',
+	                        null,
+	                        'Unfortunately, your browser is currently unsupported by our web application. We are sorry for the inconvenience. Please use one of the supported browsers listed below, or draw the image you want using an offline tool.'
+	                    )
+	                )
+	            );
+	        }
+	    }]);
+	
+	    return App;
 	}(_react2.default.Component);
 	
 	exports.default = App;
