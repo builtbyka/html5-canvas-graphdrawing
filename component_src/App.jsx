@@ -52,10 +52,14 @@ class App extends React.Component {
             ctx : ''
         }
         this.clearCanvas = this.clearCanvas.bind(this);
+        //this.captureCanvas = this.captureCanvas.bind(this);
 	}
     
+    captureCanvas(){
+        //window.open('', document.getElementById('drawing').toDataURL());    
+    }
+    
     clearCanvas(){
-       this.state.ctx.clearRect(0, 0, this.state.canvas.width, this.state.canvas.height);
     }
 
     
@@ -69,6 +73,7 @@ class App extends React.Component {
                     </select>
                 </label>
                 <button onClick={this.clearCanvas}>Clear</button>
+                <button onClick={this.captureCanvas}>Capture</button>
                 <canvas id="drawing" width="400" height="300">
 				<p>Unfortunately, your browser is currently unsupported by our web application. We are sorry for the inconvenience. Please use one of the supported browsers listed below, or draw the image you want using an offline tool.</p>
 			</canvas>

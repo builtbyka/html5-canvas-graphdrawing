@@ -19603,14 +19603,18 @@
 	            ctx: ''
 	        };
 	        _this.clearCanvas = _this.clearCanvas.bind(_this);
+	        //this.captureCanvas = this.captureCanvas.bind(this);
 	        return _this;
 	    }
 	
 	    _createClass(App, [{
-	        key: 'clearCanvas',
-	        value: function clearCanvas() {
-	            this.state.ctx.clearRect(0, 0, this.state.canvas.width, this.state.canvas.height);
+	        key: 'captureCanvas',
+	        value: function captureCanvas() {
+	            //window.open('', document.getElementById('drawing').toDataURL());   
 	        }
+	    }, {
+	        key: 'clearCanvas',
+	        value: function clearCanvas() {}
 	    }, {
 	        key: 'render',
 	        value: function render() {
@@ -19640,6 +19644,11 @@
 	                    'button',
 	                    { onClick: this.clearCanvas },
 	                    'Clear'
+	                ),
+	                _react2.default.createElement(
+	                    'button',
+	                    { onClick: this.captureCanvas },
+	                    'Capture'
 	                ),
 	                _react2.default.createElement(
 	                    'canvas',
