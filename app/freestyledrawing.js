@@ -19610,7 +19610,7 @@
 	        value: function backgroundCanvas(canvas, context) {
 	            var bw = 400,
 	                bh = 400,
-	                p = 10,
+	                p = 0,
 	                l = 0.25,
 	                cw = bw + p * 2 + 1,
 	                ch = bh + p * 2 + 1,
@@ -19648,12 +19648,16 @@
 	    }, {
 	        key: 'crossCanvas',
 	        value: function crossCanvas(context, cw, ch) {
+	            context.font = "Italic 14px Georgia";
+	            context.fillStyle = '#000';
 	            context.beginPath();
 	            context.moveTo(cw / 2, 0);
 	            context.lineTo(cw / 2, ch);
+	            context.fillText("y", cw / 2 + 5, 10);
 	            context.moveTo(0, ch / 2);
 	            context.lineTo(cw, ch / 2);
 	            context.strokeStyle = "#000";
+	            context.fillText("x", cw - 10, ch / 2 + 15);
 	            context.stroke();
 	        }
 	    }]);
@@ -19725,7 +19729,7 @@
 	}(_react2.default.Component);
 	
 	var styles = {
-	    canvas: { display: 'block', margin: '10px' }
+	    canvas: { display: 'block', margin: '20px' }
 	};
 	
 	exports.default = App;
