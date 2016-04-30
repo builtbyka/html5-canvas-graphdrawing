@@ -11,8 +11,8 @@ class App extends React.Component {
         sketch = document.querySelector('#sketch'),
         sketch_style = getComputedStyle(sketch),
         tool = document.getElementById('dtool').value;
-        canvas.width = parseInt(sketch_style.getPropertyValue('width'));
-        canvas.height = parseInt(sketch_style.getPropertyValue('height')); 
+        // canvas.width = parseInt(sketch_style.getPropertyValue('width'));
+        // canvas.height = parseInt(sketch_style.getPropertyValue('height')); 
         this.setState({canvas:canvas, ctx:ctx});
         var mouse = {x: 0, y: 0};
         
@@ -45,6 +45,7 @@ class App extends React.Component {
             ctx.lineTo(mouse.x, mouse.y);
             ctx.stroke();
         };
+       this.backgroundCanvas(canvas, ctx);
     }
     
     captureCanvas(canvas){
@@ -54,8 +55,42 @@ class App extends React.Component {
             capture.href = canvas.toDataURL();
             capture.download = "mygraph.png";
         }, false);
-        document.body.appendChild(capture);
+        document.querySelector('#sketch').appendChild(capture);
     }
+    
+    backgroundCanvas(canvas, context){
+        let bw = canvas.width,
+            bh = canvas.height,
+            p = 10,
+            l = 0.25,
+            cw = bw + (p*2) + 1,
+            ch = bh + (p*2) + 1;
+            canvas.width = parseInt(cw);
+            canvas.height = parseInt(ch);
+       //background colour     
+       context.beginPath();
+       context.moveTo(0,0);
+       context.lineTo(cw,0);
+       context.lineTo(cw,ch);
+       context.lineTo(0,ch);
+       context.closePath();
+       context.fillStyle = "#fff";
+       context.fill();
+       //grid
+       for (var x = 0; x <= bw; x += 40) {
+            context.moveTo(l + x + p, p);
+            context.lineTo(l + x + p, bh + p);
+        }
+
+        for (var x = 0; x <= bh; x += 40) {
+            context.moveTo(p, l + x + p);
+            context.lineTo(bw + p, l + x + p);
+        }
+
+        context.strokeStyle = "black";
+        context.stroke();
+    }
+    
     
 	constructor(props){
 		super(props);
@@ -64,9 +99,8 @@ class App extends React.Component {
             ctx : ''
         }
         this.clearCanvas = this.clearCanvas.bind(this);
+        this.backgroundCanvas = this.backgroundCanvas.bind(this);
 	}
-    
-
     
     clearCanvas(){
         this.state.ctx.clearRect(0, 0, this.state.canvas.width, this.state.canvas.height);
@@ -82,7 +116,7 @@ class App extends React.Component {
                     </select>
                 </label>
                 <button onClick={this.clearCanvas}>Clear</button>
-                <canvas id="drawing" width="400" height="300">
+                <canvas id="drawing" width="400" height="400">
 				<p>Unfortunately, your browser is currently unsupported by our web application. We are sorry for the inconvenience. Please use one of the supported browsers listed below, or draw the image you want using an offline tool.</p>
 			</canvas>
 			</div>

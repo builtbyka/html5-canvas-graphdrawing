@@ -19558,8 +19558,8 @@
 	                sketch = document.querySelector('#sketch'),
 	                sketch_style = getComputedStyle(sketch),
 	                tool = document.getElementById('dtool').value;
-	            canvas.width = parseInt(sketch_style.getPropertyValue('width'));
-	            canvas.height = parseInt(sketch_style.getPropertyValue('height'));
+	            // canvas.width = parseInt(sketch_style.getPropertyValue('width'));
+	            // canvas.height = parseInt(sketch_style.getPropertyValue('height'));
 	            this.setState({ canvas: canvas, ctx: ctx });
 	            var mouse = { x: 0, y: 0 };
 	
@@ -19592,6 +19592,7 @@
 	                ctx.lineTo(mouse.x, mouse.y);
 	                ctx.stroke();
 	            };
+	            this.backgroundCanvas(canvas, ctx);
 	        }
 	    }, {
 	        key: 'captureCanvas',
@@ -19602,7 +19603,41 @@
 	                capture.href = canvas.toDataURL();
 	                capture.download = "mygraph.png";
 	            }, false);
-	            document.body.appendChild(capture);
+	            document.querySelector('#sketch').appendChild(capture);
+	        }
+	    }, {
+	        key: 'backgroundCanvas',
+	        value: function backgroundCanvas(canvas, context) {
+	            var bw = canvas.width,
+	                bh = canvas.height,
+	                p = 10,
+	                l = 0.25,
+	                cw = bw + p * 2 + 1,
+	                ch = bh + p * 2 + 1;
+	            canvas.width = parseInt(cw);
+	            canvas.height = parseInt(ch);
+	            //background colour    
+	            context.beginPath();
+	            context.moveTo(0, 0);
+	            context.lineTo(cw, 0);
+	            context.lineTo(cw, ch);
+	            context.lineTo(0, ch);
+	            context.closePath();
+	            context.fillStyle = "#fff";
+	            context.fill();
+	            //grid
+	            for (var x = 0; x <= bw; x += 40) {
+	                context.moveTo(l + x + p, p);
+	                context.lineTo(l + x + p, bh + p);
+	            }
+	
+	            for (var x = 0; x <= bh; x += 40) {
+	                context.moveTo(p, l + x + p);
+	                context.lineTo(bw + p, l + x + p);
+	            }
+	
+	            context.strokeStyle = "black";
+	            context.stroke();
 	        }
 	    }]);
 	
@@ -19616,6 +19651,7 @@
 	            ctx: ''
 	        };
 	        _this.clearCanvas = _this.clearCanvas.bind(_this);
+	        _this.backgroundCanvas = _this.backgroundCanvas.bind(_this);
 	        return _this;
 	    }
 	
@@ -19656,7 +19692,7 @@
 	                ),
 	                _react2.default.createElement(
 	                    'canvas',
-	                    { id: 'drawing', width: '400', height: '300' },
+	                    { id: 'drawing', width: '400', height: '400' },
 	                    _react2.default.createElement(
 	                        'p',
 	                        null,
