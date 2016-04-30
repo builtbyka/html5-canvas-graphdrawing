@@ -19561,7 +19561,6 @@
 	            // canvas.width = parseInt(sketch_style.getPropertyValue('width'));
 	            // canvas.height = parseInt(sketch_style.getPropertyValue('height'));
 	            this.setState({ canvas: canvas, ctx: ctx });
-	
 	            var mouse = { x: 0, y: 0 };
 	
 	            this.captureCanvas(canvas);
@@ -19609,8 +19608,8 @@
 	    }, {
 	        key: 'backgroundCanvas',
 	        value: function backgroundCanvas(canvas, context) {
-	            var bw = canvas.width,
-	                bh = canvas.height,
+	            var bw = 400,
+	                bh = 400,
 	                p = 10,
 	                l = 0.25,
 	                cw = bw + p * 2 + 1,
@@ -19677,7 +19676,7 @@
 	        key: 'clearCanvas',
 	        value: function clearCanvas() {
 	            this.state.ctx.clearRect(0, 0, this.state.canvas.width + 20, this.state.canvas.height + 20);
-	            this.drawing();
+	            this.backgroundCanvas(this.state.canvas, this.state.ctx);
 	        }
 	    }, {
 	        key: 'render',

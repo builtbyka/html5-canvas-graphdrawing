@@ -14,7 +14,6 @@ class App extends React.Component {
         // canvas.width = parseInt(sketch_style.getPropertyValue('width'));
         // canvas.height = parseInt(sketch_style.getPropertyValue('height')); 
         this.setState({canvas:canvas, ctx:ctx});
-
         var mouse = {x: 0, y: 0};
         
         this.captureCanvas(canvas);
@@ -60,8 +59,8 @@ class App extends React.Component {
     }
     
     backgroundCanvas(canvas, context){
-        let bw = canvas.width,
-            bh = canvas.height,
+        let bw = 400,
+            bh = 400,
             p = 10,
             l = 0.25,
             cw = bw + (p*2) + 1,
@@ -123,7 +122,7 @@ class App extends React.Component {
     
     clearCanvas(){
         this.state.ctx.clearRect(0, 0, this.state.canvas.width+20, this.state.canvas.height+20);
-        this.drawing();
+        this.backgroundCanvas(this.state.canvas, this.state.ctx);
     }
 
 	render(){
