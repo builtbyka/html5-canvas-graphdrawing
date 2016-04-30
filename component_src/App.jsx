@@ -67,28 +67,29 @@ class App extends React.Component {
             ch = bh + (p*2) + 1;
             canvas.width = parseInt(cw);
             canvas.height = parseInt(ch);
-       //background colour     
-       context.beginPath();
-       context.moveTo(0,0);
-       context.lineTo(cw,0);
-       context.lineTo(cw,ch);
-       context.lineTo(0,ch);
-       context.closePath();
-       context.fillStyle = "#fff";
-       context.fill();
-       //grid
-       for (var x = 0; x <= bw; x += 40) {
-            context.moveTo(l + x + p, p);
-            context.lineTo(l + x + p, bh + p);
-        }
+            
+        //background colour     
+        context.beginPath();
+        context.moveTo(0,0);
+        context.lineTo(cw,0);
+        context.lineTo(cw,ch);
+        context.lineTo(0,ch);
+        context.closePath();
+        context.fillStyle = "#fff";
+        context.fill();
+        //grid
+        for (var x = 0; x <= bw; x += 40) {
+                context.moveTo(l + x + p, p);
+                context.lineTo(l + x + p, bh + p);
+            }
 
         for (var x = 0; x <= bh; x += 40) {
-            context.moveTo(p, l + x + p);
-            context.lineTo(bw + p, l + x + p);
-        }
+                context.moveTo(p, l + x + p);
+                context.lineTo(bw + p, l + x + p);
+            }
 
-        context.strokeStyle = "black";
-        context.stroke();
+            context.strokeStyle = "black";
+            context.stroke();
     }
     
     
@@ -116,12 +117,16 @@ class App extends React.Component {
                     </select>
                 </label>
                 <button onClick={this.clearCanvas}>Clear</button>
-                <canvas id="drawing" width="400" height="400">
+                <canvas style={styles.canvas} id="drawing" width="400" height="400">
 				<p>Unfortunately, your browser is currently unsupported by our web application. We are sorry for the inconvenience. Please use one of the supported browsers listed below, or draw the image you want using an offline tool.</p>
 			</canvas>
 			</div>
 		)
 	}
+}
+
+let styles = {
+    canvas : {display : 'block',  margin : '10px'}
 }
 
 export default App

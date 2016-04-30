@@ -19616,6 +19616,7 @@
 	                ch = bh + p * 2 + 1;
 	            canvas.width = parseInt(cw);
 	            canvas.height = parseInt(ch);
+	
 	            //background colour    
 	            context.beginPath();
 	            context.moveTo(0, 0);
@@ -19692,7 +19693,7 @@
 	                ),
 	                _react2.default.createElement(
 	                    'canvas',
-	                    { id: 'drawing', width: '400', height: '400' },
+	                    { style: styles.canvas, id: 'drawing', width: '400', height: '400' },
 	                    _react2.default.createElement(
 	                        'p',
 	                        null,
@@ -19705,6 +19706,10 @@
 	
 	    return App;
 	}(_react2.default.Component);
+	
+	var styles = {
+	    canvas: { display: 'block', margin: '10px' }
+	};
 	
 	exports.default = App;
 
