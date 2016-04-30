@@ -14,6 +14,7 @@ class App extends React.Component {
         // canvas.width = parseInt(sketch_style.getPropertyValue('width'));
         // canvas.height = parseInt(sketch_style.getPropertyValue('height')); 
         this.setState({canvas:canvas, ctx:ctx});
+
         var mouse = {x: 0, y: 0};
         
         this.captureCanvas(canvas);
@@ -64,7 +65,8 @@ class App extends React.Component {
             p = 10,
             l = 0.25,
             cw = bw + (p*2) + 1,
-            ch = bh + (p*2) + 1;
+            ch = bh + (p*2) + 1,
+            g = 10;
             canvas.width = parseInt(cw);
             canvas.height = parseInt(ch);
             
@@ -77,19 +79,35 @@ class App extends React.Component {
         context.closePath();
         context.fillStyle = "#fff";
         context.fill();
+        
         //grid
-        for (var x = 0; x <= bw; x += 40) {
+        context.beginPath();
+        for (var x = 0; x <= bw; x += g) {
                 context.moveTo(l + x + p, p);
                 context.lineTo(l + x + p, bh + p);
             }
 
-        for (var x = 0; x <= bh; x += 40) {
+        for (var x = 0; x <= bh; x += g) {
                 context.moveTo(p, l + x + p);
                 context.lineTo(bw + p, l + x + p);
             }
 
-            context.strokeStyle = "black";
+            context.strokeStyle = "#ddd";
             context.stroke();
+            context.closePath();  
+         this.crossCanvas(context, cw, ch);
+  
+    }
+    
+    crossCanvas(context, cw, ch){
+        context.beginPath();
+        context.moveTo(cw/2, 0);
+        context.lineTo(cw/2,ch);
+        context.moveTo(0, ch/2);
+        context.lineTo(cw,ch/2);
+        context.strokeStyle = "#000";
+        context.stroke();
+        
     }
     
     
@@ -104,7 +122,8 @@ class App extends React.Component {
 	}
     
     clearCanvas(){
-        this.state.ctx.clearRect(0, 0, this.state.canvas.width, this.state.canvas.height);
+        this.state.ctx.clearRect(0, 0, this.state.canvas.width+20, this.state.canvas.height+20);
+        this.drawing();
     }
 
 	render(){
