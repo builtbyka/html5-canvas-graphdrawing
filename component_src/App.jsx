@@ -10,20 +10,21 @@ class App extends React.Component {
         ctx = canvas.getContext('2d'),
         sketch = document.querySelector('#sketch'),
         sketch_style = getComputedStyle(sketch),
-        tool = document.getElementById('dtool').value,
-        t = this;
-        // canvas.width = parseInt(sketch_style.getPropertyValue('width'));
-        // canvas.height = parseInt(sketch_style.getPropertyValue('height')); 
-        this.setState({canvas:canvas, ctx:ctx});
+        tool = document.getElementById('dtool').value;
+
         
         let canvasTemp = document.createElement('canvas');
         canvasTemp.id = 'drawingTemp';
         canvasTemp.width = canvas.width;
         canvasTemp.height = canvas.height;
         sketch.appendChild(canvasTemp);
+
         let ctxTemp = canvasTemp.getContext('2d');
         
         var mouse = {x: 0, y: 0};
+        
+        this.setState({canvas:canvas, ctx:ctx, mouse:mouse, canvasTemp:canvasTemp, ctxTemp:ctxTemp});
+
         
         this.captureCanvas(canvas);
  
@@ -38,51 +39,57 @@ class App extends React.Component {
         ctxTemp.lineJoin = 'round';
         ctxTemp.lineCap = 'round';
         ctxTemp.strokeStyle = 'black';
-        
+       
+            
+        this.pencilTool(mouse, ctx, ctxTemp, canvasTemp);
+        this.backgroundCanvas(canvas, ctx);
+    }
+    
+    pencilTool(mouse, ctx, ctxTemp, canvasTemp){
+        let t = this,
+            mouseDown = canvasTemp.addEventListener('mousedown', function(e) {
+                ctxTemp.beginPath();
+                ctxTemp.moveTo(mouse.x, mouse.y);
+            
+                canvasTemp.addEventListener('mousemove', mouseMove, false);
+            }, false),
+            mouseUp = canvasTemp.addEventListener('mouseup', function() {
+                canvasTemp.removeEventListener('mousemove', mouseMove, false);
+                t.updateCanvas(ctx, ctxTemp, canvasTemp);
+            }, false),
+            mouseMove = function() {
+                ctxTemp.lineTo(mouse.x, mouse.y);
+                ctxTemp.stroke();
+            };
+    }
+    
+    lineTool(mouse, ctx, ctxTemp, canvasTemp){
         let started = false,
-            dTool = {};
-        
-       canvasTemp.addEventListener('mousedown', function(ev) {
-            started = true;
-            dTool.x0 = mouse.x;
-		    dTool.y0 = mouse.y;
-        }, false);
-        
-        canvasTemp.addEventListener('mousemove', function(ev) {
-            if (!started) {
-			    return;
-		    }
-            ctxTemp.clearRect(0, 0, canvas.width, canvas.height);
-            ctxTemp.beginPath();
-		    ctxTemp.moveTo(dTool.x0, dTool.y0);
-            ctxTemp.lineTo(mouse.x, mouse.y);
-            ctxTemp.stroke();
-		    ctxTemp.closePath();
-        }, false);
-        
-        canvasTemp.addEventListener('mouseup', function() {
-            if (started) {
-                started = false;
-                console.log(this);
-                t .updateCanvas(ctx, ctxTemp, canvasTemp);
-		    }
-        }, false);
-        // canvas.addEventListener('mousedown', function(e) {
-        //     ctx.beginPath();
-        //     ctx.moveTo(mouse.x, mouse.y);
-        
-        //     canvas.addEventListener('mousemove', onPaint, false);
-        // }, false);
-        
-        // canvas.addEventListener('mouseup', function() {
-        //     canvas.removeEventListener('mousemove', onPaint, false);
-        // }, false);
-        
-        // var onPaint = function() {
-        //     ctx.lineTo(mouse.x, mouse.y);
-        //     ctx.stroke();
-        // };
-       this.backgroundCanvas(canvas, ctx);
+            dTool = {},
+            t = this,
+            mouseDown = canvasTemp.addEventListener('mousedown', function(ev) {
+                started = true;
+                dTool.x0 = mouse.x;
+                dTool.y0 = mouse.y;
+            }, false),
+            mouseMove = canvasTemp.addEventListener('mousemove', function(ev) {
+                if (!started) {
+                    return;
+                }
+                ctxTemp.clearRect(0, 0, canvasTemp.width, canvasTemp.height);
+                ctxTemp.beginPath();
+                ctxTemp.moveTo(dTool.x0, dTool.y0);
+                ctxTemp.lineTo(mouse.x, mouse.y);
+                ctxTemp.stroke();
+                ctxTemp.closePath();
+            }, false),
+            mouseUp = canvasTemp.addEventListener('mouseup', function() {
+                if (started) {
+                    started = false;
+                    t.updateCanvas(ctx, ctxTemp, canvasTemp);
+                }
+            }, false);
+       
     }
     
     updateCanvas(ctx, ctxTemp, canvasTemp){
@@ -156,16 +163,29 @@ class App extends React.Component {
         
     }
     
+    toolPicker(e){
+        var tool = document.querySelector('#dtool').value;
+        let {mouse, ctx, ctxTemp, canvasTemp} = this.state;
+        if(tool === 'pencil'){
+            this.pencilTool(mouse, ctx, ctxTemp, canvasTemp);
+        }else{
+            this.lineTool(mouse, ctx, ctxTemp, canvasTemp);
+        }
+    }
+    
     
 	constructor(props){
 		super(props);
         this.state = {
             canvas : '',
-            ctx : ''
+            ctx : '',
+            mouse : '',
+            canvasTemp : '',
+            ctxTemp : ''
         }
-        this.drawing = this.drawing.bind(this);
         this.clearCanvas = this.clearCanvas.bind(this);
         this.backgroundCanvas = this.backgroundCanvas.bind(this);
+        this.toolPicker = this.toolPicker.bind(this);
 	}
     
     clearCanvas(){
@@ -177,7 +197,7 @@ class App extends React.Component {
 		return (       
 			<div style={styles.sketch} id="sketch">
                 <label>Drawing tool:
-                    <select id="dtool">
+                    <select onChange={this.toolPicker} id="dtool">
                         <option value="pencil">Pencil</option>
                         <option value="line">Line</option>
                     </select>

@@ -19557,20 +19557,19 @@
 	                ctx = canvas.getContext('2d'),
 	                sketch = document.querySelector('#sketch'),
 	                sketch_style = getComputedStyle(sketch),
-	                tool = document.getElementById('dtool').value,
-	                t = this;
-	            // canvas.width = parseInt(sketch_style.getPropertyValue('width'));
-	            // canvas.height = parseInt(sketch_style.getPropertyValue('height'));
-	            this.setState({ canvas: canvas, ctx: ctx });
+	                tool = document.getElementById('dtool').value;
 	
 	            var canvasTemp = document.createElement('canvas');
 	            canvasTemp.id = 'drawingTemp';
 	            canvasTemp.width = canvas.width;
 	            canvasTemp.height = canvas.height;
 	            sketch.appendChild(canvasTemp);
+	
 	            var ctxTemp = canvasTemp.getContext('2d');
 	
 	            var mouse = { x: 0, y: 0 };
+	
+	            this.setState({ canvas: canvas, ctx: ctx, mouse: mouse, canvasTemp: canvasTemp, ctxTemp: ctxTemp });
 	
 	            this.captureCanvas(canvas);
 	
@@ -19586,50 +19585,56 @@
 	            ctxTemp.lineCap = 'round';
 	            ctxTemp.strokeStyle = 'black';
 	
-	            var started = false,
-	                dTool = {};
+	            this.pencilTool(mouse, ctx, ctxTemp, canvasTemp);
+	            this.backgroundCanvas(canvas, ctx);
+	        }
+	    }, {
+	        key: 'pencilTool',
+	        value: function pencilTool(mouse, ctx, ctxTemp, canvasTemp) {
+	            var t = this,
+	                mouseDown = canvasTemp.addEventListener('mousedown', function (e) {
+	                ctxTemp.beginPath();
+	                ctxTemp.moveTo(mouse.x, mouse.y);
 	
-	            canvasTemp.addEventListener('mousedown', function (ev) {
+	                canvasTemp.addEventListener('mousemove', mouseMove, false);
+	            }, false),
+	                mouseUp = canvasTemp.addEventListener('mouseup', function () {
+	                canvasTemp.removeEventListener('mousemove', mouseMove, false);
+	                t.updateCanvas(ctx, ctxTemp, canvasTemp);
+	            }, false),
+	                mouseMove = function mouseMove() {
+	                ctxTemp.lineTo(mouse.x, mouse.y);
+	                ctxTemp.stroke();
+	            };
+	        }
+	    }, {
+	        key: 'lineTool',
+	        value: function lineTool(mouse, ctx, ctxTemp, canvasTemp) {
+	            var started = false,
+	                dTool = {},
+	                t = this,
+	                mouseDown = canvasTemp.addEventListener('mousedown', function (ev) {
 	                started = true;
 	                dTool.x0 = mouse.x;
 	                dTool.y0 = mouse.y;
-	            }, false);
-	
-	            canvasTemp.addEventListener('mousemove', function (ev) {
+	            }, false),
+	                mouseMove = canvasTemp.addEventListener('mousemove', function (ev) {
 	                if (!started) {
 	                    return;
 	                }
-	                ctxTemp.clearRect(0, 0, canvas.width, canvas.height);
+	                ctxTemp.clearRect(0, 0, canvasTemp.width, canvasTemp.height);
 	                ctxTemp.beginPath();
 	                ctxTemp.moveTo(dTool.x0, dTool.y0);
 	                ctxTemp.lineTo(mouse.x, mouse.y);
 	                ctxTemp.stroke();
 	                ctxTemp.closePath();
-	            }, false);
-	
-	            canvasTemp.addEventListener('mouseup', function () {
+	            }, false),
+	                mouseUp = canvasTemp.addEventListener('mouseup', function () {
 	                if (started) {
 	                    started = false;
-	                    console.log(this);
 	                    t.updateCanvas(ctx, ctxTemp, canvasTemp);
 	                }
 	            }, false);
-	            // canvas.addEventListener('mousedown', function(e) {
-	            //     ctx.beginPath();
-	            //     ctx.moveTo(mouse.x, mouse.y);
-	
-	            //     canvas.addEventListener('mousemove', onPaint, false);
-	            // }, false);
-	
-	            // canvas.addEventListener('mouseup', function() {
-	            //     canvas.removeEventListener('mousemove', onPaint, false);
-	            // }, false);
-	
-	            // var onPaint = function() {
-	            //     ctx.lineTo(mouse.x, mouse.y);
-	            //     ctx.stroke();
-	            // };
-	            this.backgroundCanvas(canvas, ctx);
 	        }
 	    }, {
 	        key: 'updateCanvas',
@@ -19703,6 +19708,22 @@
 	            context.fillText("x", cw - 10, ch / 2 + 15);
 	            context.stroke();
 	        }
+	    }, {
+	        key: 'toolPicker',
+	        value: function toolPicker(e) {
+	            var tool = document.querySelector('#dtool').value;
+	            var _state = this.state;
+	            var mouse = _state.mouse;
+	            var ctx = _state.ctx;
+	            var ctxTemp = _state.ctxTemp;
+	            var canvasTemp = _state.canvasTemp;
+	
+	            if (tool === 'pencil') {
+	                this.pencilTool(mouse, ctx, ctxTemp, canvasTemp);
+	            } else {
+	                this.lineTool(mouse, ctx, ctxTemp, canvasTemp);
+	            }
+	        }
 	    }]);
 	
 	    function App(props) {
@@ -19712,11 +19733,14 @@
 	
 	        _this.state = {
 	            canvas: '',
-	            ctx: ''
+	            ctx: '',
+	            mouse: '',
+	            canvasTemp: '',
+	            ctxTemp: ''
 	        };
-	        _this.drawing = _this.drawing.bind(_this);
 	        _this.clearCanvas = _this.clearCanvas.bind(_this);
 	        _this.backgroundCanvas = _this.backgroundCanvas.bind(_this);
+	        _this.toolPicker = _this.toolPicker.bind(_this);
 	        return _this;
 	    }
 	
@@ -19738,7 +19762,7 @@
 	                    'Drawing tool:',
 	                    _react2.default.createElement(
 	                        'select',
-	                        { id: 'dtool' },
+	                        { onChange: this.toolPicker, id: 'dtool' },
 	                        _react2.default.createElement(
 	                            'option',
 	                            { value: 'pencil' },
