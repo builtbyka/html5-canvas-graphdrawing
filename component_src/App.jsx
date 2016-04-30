@@ -6,46 +6,89 @@ class App extends React.Component {
     }
     
     drawing(){      
-        let  canvas = document.querySelector('#drawing'),
+        let canvas = document.querySelector('#drawing'),
         ctx = canvas.getContext('2d'),
         sketch = document.querySelector('#sketch'),
         sketch_style = getComputedStyle(sketch),
-        tool = document.getElementById('dtool').value;
+        tool = document.getElementById('dtool').value,
+        t = this;
         // canvas.width = parseInt(sketch_style.getPropertyValue('width'));
         // canvas.height = parseInt(sketch_style.getPropertyValue('height')); 
         this.setState({canvas:canvas, ctx:ctx});
+        
+        let canvasTemp = document.createElement('canvas');
+        canvasTemp.id = 'drawingTemp';
+        canvasTemp.width = canvas.width;
+        canvasTemp.height = canvas.height;
+        sketch.appendChild(canvasTemp);
+        let ctxTemp = canvasTemp.getContext('2d');
+        
         var mouse = {x: 0, y: 0};
         
         this.captureCanvas(canvas);
  
         /* Mouse Capturing Work */
-        canvas.addEventListener('mousemove', function(e) {
+        canvasTemp.addEventListener('mousemove', function(e) {
             mouse.x = e.pageX - this.offsetLeft;
             mouse.y = e.pageY - this.offsetTop;
         }, false);
         
         /* Drawing on Paint App */
-        ctx.lineWidth = 1;
-        ctx.lineJoin = 'round';
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = 'black';
+        ctxTemp.lineWidth = 1;
+        ctxTemp.lineJoin = 'round';
+        ctxTemp.lineCap = 'round';
+        ctxTemp.strokeStyle = 'black';
         
-        canvas.addEventListener('mousedown', function(e) {
-            ctx.beginPath();
-            ctx.moveTo(mouse.x, mouse.y);
+        let started = false,
+            dTool = {};
         
-            canvas.addEventListener('mousemove', onPaint, false);
+       canvasTemp.addEventListener('mousedown', function(ev) {
+            started = true;
+            dTool.x0 = mouse.x;
+		    dTool.y0 = mouse.y;
         }, false);
         
-        canvas.addEventListener('mouseup', function() {
-            canvas.removeEventListener('mousemove', onPaint, false);
+        canvasTemp.addEventListener('mousemove', function(ev) {
+            if (!started) {
+			    return;
+		    }
+            ctxTemp.clearRect(0, 0, canvas.width, canvas.height);
+            ctxTemp.beginPath();
+		    ctxTemp.moveTo(dTool.x0, dTool.y0);
+            ctxTemp.lineTo(mouse.x, mouse.y);
+            ctxTemp.stroke();
+		    ctxTemp.closePath();
         }, false);
         
-        var onPaint = function() {
-            ctx.lineTo(mouse.x, mouse.y);
-            ctx.stroke();
-        };
+        canvasTemp.addEventListener('mouseup', function() {
+            if (started) {
+                started = false;
+                console.log(this);
+                t .updateCanvas(ctx, ctxTemp, canvasTemp);
+		    }
+        }, false);
+        // canvas.addEventListener('mousedown', function(e) {
+        //     ctx.beginPath();
+        //     ctx.moveTo(mouse.x, mouse.y);
+        
+        //     canvas.addEventListener('mousemove', onPaint, false);
+        // }, false);
+        
+        // canvas.addEventListener('mouseup', function() {
+        //     canvas.removeEventListener('mousemove', onPaint, false);
+        // }, false);
+        
+        // var onPaint = function() {
+        //     ctx.lineTo(mouse.x, mouse.y);
+        //     ctx.stroke();
+        // };
        this.backgroundCanvas(canvas, ctx);
+    }
+    
+    updateCanvas(ctx, ctxTemp, canvasTemp){
+        ctx.drawImage(canvasTemp, 0, 0);
+        ctxTemp.clearRect(0, 0, canvasTemp.width, canvasTemp.height);
+
     }
     
     captureCanvas(canvas){
@@ -120,6 +163,7 @@ class App extends React.Component {
             canvas : '',
             ctx : ''
         }
+        this.drawing = this.drawing.bind(this);
         this.clearCanvas = this.clearCanvas.bind(this);
         this.backgroundCanvas = this.backgroundCanvas.bind(this);
 	}
