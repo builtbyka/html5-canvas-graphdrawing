@@ -36,6 +36,6 @@
     "webpack": "^1.12.11",
     "webpack-dev-server": "^1.14.1"
   },
-  "author": "John Bicknell",
+  "author": "KAE",
   "license": "ISC"
 }

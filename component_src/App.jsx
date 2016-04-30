@@ -55,7 +55,7 @@ class App extends React.Component {
             capture.href = canvas.toDataURL();
             capture.download = "mygraph.png";
         }, false);
-        document.querySelector('#sketch').appendChild(capture);
+        document.querySelector('.buttons').appendChild(capture);
     }
     
     backgroundCanvas(canvas, context){
@@ -131,23 +131,26 @@ class App extends React.Component {
 
 	render(){
 		return (       
-			<div id="sketch">
+			<div style={styles.sketch} id="sketch">
                 <label>Drawing tool:
                     <select id="dtool">
                         <option value="pencil">Pencil</option>
                         <option value="line">Line</option>
                     </select>
                 </label>
-                <button onClick={this.clearCanvas}>Clear</button>
                 <canvas style={styles.canvas} id="drawing" width="400" height="400">
 				<p>Unfortunately, your browser is currently unsupported by our web application. We are sorry for the inconvenience. Please use one of the supported browsers listed below, or draw the image you want using an offline tool.</p>
 			</canvas>
+                <div className="buttons">
+                    <button onClick={this.clearCanvas}>Clear</button>
+                </div>
 			</div>
 		)
 	}
 }
 
 let styles = {
+    sketch : {width: '440px'},
     canvas : {display : 'block',  margin : '20px'}
 }
 

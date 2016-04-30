@@ -19603,7 +19603,7 @@
 	                capture.href = canvas.toDataURL();
 	                capture.download = "mygraph.png";
 	            }, false);
-	            document.querySelector('#sketch').appendChild(capture);
+	            document.querySelector('.buttons').appendChild(capture);
 	        }
 	    }, {
 	        key: 'backgroundCanvas',
@@ -19687,7 +19687,7 @@
 	        value: function render() {
 	            return _react2.default.createElement(
 	                'div',
-	                { id: 'sketch' },
+	                { style: styles.sketch, id: 'sketch' },
 	                _react2.default.createElement(
 	                    'label',
 	                    null,
@@ -19708,17 +19708,21 @@
 	                    )
 	                ),
 	                _react2.default.createElement(
-	                    'button',
-	                    { onClick: this.clearCanvas },
-	                    'Clear'
-	                ),
-	                _react2.default.createElement(
 	                    'canvas',
 	                    { style: styles.canvas, id: 'drawing', width: '400', height: '400' },
 	                    _react2.default.createElement(
 	                        'p',
 	                        null,
 	                        'Unfortunately, your browser is currently unsupported by our web application. We are sorry for the inconvenience. Please use one of the supported browsers listed below, or draw the image you want using an offline tool.'
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'buttons' },
+	                    _react2.default.createElement(
+	                        'button',
+	                        { onClick: this.clearCanvas },
+	                        'Clear'
 	                    )
 	                )
 	            );
@@ -19729,6 +19733,7 @@
 	}(_react2.default.Component);
 	
 	var styles = {
+	    sketch: { width: '440px' },
 	    canvas: { display: 'block', margin: '20px' }
 	};
 	
