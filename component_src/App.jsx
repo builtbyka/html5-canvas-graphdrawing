@@ -15,6 +15,8 @@ class App extends React.Component {
         canvas.height = parseInt(sketch_style.getPropertyValue('height')); 
         this.setState({canvas:canvas, ctx:ctx});
         var mouse = {x: 0, y: 0};
+        
+        this.captureCanvas(canvas);
  
         /* Mouse Capturing Work */
         canvas.addEventListener('mousemove', function(e) {
@@ -45,6 +47,16 @@ class App extends React.Component {
         };
     }
     
+    captureCanvas(canvas){
+        var capture = document.createElement('a');
+        capture.innerHTML = 'Download image';
+        capture.addEventListener('click', function(ev) {
+            capture.href = canvas.toDataURL();
+            capture.download = "mygraph.png";
+        }, false);
+        document.body.appendChild(capture);
+    }
+    
 	constructor(props){
 		super(props);
         this.state = {
@@ -52,17 +64,14 @@ class App extends React.Component {
             ctx : ''
         }
         this.clearCanvas = this.clearCanvas.bind(this);
-        //this.captureCanvas = this.captureCanvas.bind(this);
 	}
     
-    captureCanvas(){
-        //window.open('', document.getElementById('drawing').toDataURL());    
-    }
-    
-    clearCanvas(){
-    }
 
     
+    clearCanvas(){
+        this.state.ctx.clearRect(0, 0, this.state.canvas.width, this.state.canvas.height);
+    }
+
 	render(){
 		return (       
 			<div id="sketch">
@@ -73,7 +82,6 @@ class App extends React.Component {
                     </select>
                 </label>
                 <button onClick={this.clearCanvas}>Clear</button>
-                <button onClick={this.captureCanvas}>Capture</button>
                 <canvas id="drawing" width="400" height="300">
 				<p>Unfortunately, your browser is currently unsupported by our web application. We are sorry for the inconvenience. Please use one of the supported browsers listed below, or draw the image you want using an offline tool.</p>
 			</canvas>

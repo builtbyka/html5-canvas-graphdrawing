@@ -19563,6 +19563,8 @@
 	            this.setState({ canvas: canvas, ctx: ctx });
 	            var mouse = { x: 0, y: 0 };
 	
+	            this.captureCanvas(canvas);
+	
 	            /* Mouse Capturing Work */
 	            canvas.addEventListener('mousemove', function (e) {
 	                mouse.x = e.pageX - this.offsetLeft;
@@ -19591,6 +19593,17 @@
 	                ctx.stroke();
 	            };
 	        }
+	    }, {
+	        key: 'captureCanvas',
+	        value: function captureCanvas(canvas) {
+	            var capture = document.createElement('a');
+	            capture.innerHTML = 'Download image';
+	            capture.addEventListener('click', function (ev) {
+	                capture.href = canvas.toDataURL();
+	                capture.download = "mygraph.png";
+	            }, false);
+	            document.body.appendChild(capture);
+	        }
 	    }]);
 	
 	    function App(props) {
@@ -19603,18 +19616,14 @@
 	            ctx: ''
 	        };
 	        _this.clearCanvas = _this.clearCanvas.bind(_this);
-	        //this.captureCanvas = this.captureCanvas.bind(this);
 	        return _this;
 	    }
 	
 	    _createClass(App, [{
-	        key: 'captureCanvas',
-	        value: function captureCanvas() {
-	            //window.open('', document.getElementById('drawing').toDataURL());   
-	        }
-	    }, {
 	        key: 'clearCanvas',
-	        value: function clearCanvas() {}
+	        value: function clearCanvas() {
+	            this.state.ctx.clearRect(0, 0, this.state.canvas.width, this.state.canvas.height);
+	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
@@ -19644,11 +19653,6 @@
 	                    'button',
 	                    { onClick: this.clearCanvas },
 	                    'Clear'
-	                ),
-	                _react2.default.createElement(
-	                    'button',
-	                    { onClick: this.captureCanvas },
-	                    'Capture'
 	                ),
 	                _react2.default.createElement(
 	                    'canvas',
