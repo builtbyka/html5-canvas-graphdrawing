@@ -1,4 +1,4 @@
-#React Clientside boilerplate
+#Draw on a chart - maths exercise
 
 Run npm install to get all modules setup
 
