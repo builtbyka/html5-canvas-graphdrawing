@@ -19592,6 +19592,9 @@
 	                canvas.addEventListener('mousedown', ev_canvas, false);
 	                canvas.addEventListener('mousemove', ev_canvas, false);
 	                canvas.addEventListener('mouseup', ev_canvas, false);
+	                canvas.addEventListener('touchstart', ev_canvas, false);
+	                canvas.addEventListener('touchmove', ev_canvas, false);
+	                canvas.addEventListener('touchend', ev_canvas, false);
 	            }
 	
 	            // The general-purpose event handler. This function just determines the mouse
@@ -19607,8 +19610,11 @@
 	                    ev._y = ev.offsetY;
 	                }
 	
+	                var type = void 0;
+	                type = ev.type;
+	
 	                // Call the event handler of the tool.
-	                var func = tool[ev.type];
+	                var func = tool[type];
 	                if (func) {
 	                    func(ev);
 	                }
@@ -19630,18 +19636,33 @@
 	
 	            // The drawing pencil.
 	            tools.pencil = function () {
-	                var tool = this;
-	                this.started = false;
-	
-	                this.mousedown = function (ev) {
+	                var tool = this,
+	                    rect = canvas.getBoundingClientRect();
+	                window.blockMenuHeaderScroll = false;
+	                this.started = false, this.mousedown = function (ev) {
 	                    context.beginPath();
 	                    context.moveTo(ev._x, ev._y);
 	                    tool.started = true;
 	                };
 	
+	                this.touchstart = function (ev) {
+	                    context.beginPath();
+	                    context.moveTo(ev.targetTouches[0].pageX - rect.left, ev.targetTouches[0].pageY - rect.top);
+	                    tool.started = true;
+	                };
+	
 	                this.mousemove = function (ev) {
 	                    if (tool.started) {
+	                        console.log();
 	                        context.lineTo(ev._x, ev._y);
+	                        context.stroke();
+	                    }
+	                };
+	
+	                this.touchmove = function (ev) {
+	                    if (tool.started) {
+	                        console.log();
+	                        context.lineTo(ev.targetTouches[0].pageX - rect.left, ev.targetTouches[0].pageY - rect.top);
 	                        context.stroke();
 	                    }
 	                };
@@ -19653,17 +19674,31 @@
 	                        img_update();
 	                    }
 	                };
+	
+	                this.touchend = function (ev) {
+	                    if (tool.started) {
+	                        tool.started = false;
+	                        img_update();
+	                    }
+	                };
 	            };
 	
 	            // The line tool.
 	            tools.line = function () {
-	                var tool = this;
+	                var tool = this,
+	                    rect = canvas.getBoundingClientRect();
 	                this.started = false;
-	
 	                this.mousedown = function (ev) {
 	                    tool.started = true;
 	                    tool.x0 = ev._x;
 	                    tool.y0 = ev._y;
+	                };
+	
+	                this.touchstart = function (ev) {
+	                    tool.started = true;
+	                    tool.x0 = ev.targetTouches[0].pageX - rect.left;
+	                    tool.y0 = ev.targetTouches[0].pageY - rect.top;
+	                    console.log(tool);
 	                };
 	
 	                this.mousemove = function (ev) {
@@ -19680,6 +19715,19 @@
 	                    context.closePath();
 	                };
 	
+	                this.touchmove = function (ev) {
+	                    if (!tool.started) {
+	                        return;
+	                    }
+	
+	                    context.clearRect(0, 0, canvas.width, canvas.height);
+	                    context.beginPath();
+	                    context.moveTo(tool.x0, tool.y0);
+	                    context.lineTo(ev.targetTouches[0].pageX - rect.left, ev.targetTouches[0].pageY - rect.top);
+	                    context.stroke();
+	                    context.closePath();
+	                };
+	
 	                this.mouseup = function (ev) {
 	                    if (tool.started) {
 	                        tool.mousemove(ev);
@@ -19687,7 +19735,61 @@
 	                        img_update();
 	                    }
 	                };
+	
+	                this.touchend = function (ev) {
+	                    if (tool.started) {
+	                        tool.started = false;
+	                        img_update();
+	                    }
+	                };
 	            };
+	
+	            // // The text tool.
+	            // tools.txt = function () {
+	            //     var tool = this;
+	            //     this.started = false;
+	            //     let lastTargetDown,
+	            //     counter = 0,
+	            //     x,y;
+	
+	            //     this.mousedown = function (ev) {
+	            //         // context.beginPath();
+	            //         x = ev._x;
+	            //         y = ev._y;
+	            //         document.getElementById("drawingTemp").style.cursor = "text";
+	            //         window.addEventListener("keypress", keypress, false);
+	            //         tool.started = true;
+	            //     };
+	
+	            //    function keypress (ev){
+	            //        if(ev.which === 13){
+	            //            document.getElementById("drawingTemp").style.cursor = "pointer";
+	            //            x = 0;
+	            //            y = 0;
+	            //            tool.started = false;
+	            //            return;
+	            //        }
+	            //         let c = String.fromCharCode(ev.which);
+	            //         context.fillText(c,x+counter,y);
+	            //         counter +=6;
+	            //         img_update();
+	            //     }
+	
+	            //     // this.mousemove = function (ev) {
+	            //     //     if (tool.started) {
+	            //     //         context.lineTo(ev._x, ev._y);
+	            //     //         context.stroke();
+	            //     //      }
+	            //     // };
+	
+	            //     // this.mouseup = function (ev) {
+	            //     //      if (tool.started) {
+	            //     //          tool.mousemove(ev);
+	            //     //          tool.started = false;
+	            //     //          img_update();
+	            //     //      }
+	            //     //  };
+	            // };
 	
 	            init();
 	            this.setState({ canvas: canvaso, ctx: contexto });
@@ -19794,42 +19896,46 @@
 	        value: function render() {
 	            return _react2.default.createElement(
 	                'div',
-	                { id: 'sketch' },
-	                _react2.default.createElement(
-	                    'label',
-	                    null,
-	                    'Drawing tool:',
-	                    _react2.default.createElement(
-	                        'select',
-	                        { id: 'dtool' },
-	                        _react2.default.createElement(
-	                            'option',
-	                            { value: 'pencil' },
-	                            'Pencil'
-	                        ),
-	                        _react2.default.createElement(
-	                            'option',
-	                            { value: 'line' },
-	                            'Line'
-	                        )
-	                    )
-	                ),
-	                _react2.default.createElement(
-	                    'canvas',
-	                    { id: 'drawing', width: '400', height: '400' },
-	                    _react2.default.createElement(
-	                        'p',
-	                        null,
-	                        'Unfortunately, your browser is currently unsupported by our web application. We are sorry for the inconvenience. Please use one of the supported browsers listed below, or draw the image you want using an offline tool.'
-	                    )
-	                ),
+	                null,
 	                _react2.default.createElement(
 	                    'div',
-	                    { className: 'buttons' },
+	                    { id: 'sketch' },
 	                    _react2.default.createElement(
-	                        'button',
-	                        { onClick: this.clearCanvas },
-	                        'Clear'
+	                        'label',
+	                        null,
+	                        'Drawing tool:',
+	                        _react2.default.createElement(
+	                            'select',
+	                            { id: 'dtool' },
+	                            _react2.default.createElement(
+	                                'option',
+	                                { value: 'pencil' },
+	                                'Pencil'
+	                            ),
+	                            _react2.default.createElement(
+	                                'option',
+	                                { value: 'line' },
+	                                'Line'
+	                            )
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'canvas',
+	                        { id: 'drawing', width: '400', height: '400' },
+	                        _react2.default.createElement(
+	                            'p',
+	                            null,
+	                            'Unfortunately, your browser is currently unsupported by our web application. We are sorry for the inconvenience. Please use one of the supported browsers listed below, or draw the image you want using an offline tool.'
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'buttons' },
+	                        _react2.default.createElement(
+	                            'button',
+	                            { onClick: this.clearCanvas },
+	                            'Clear'
+	                        )
 	                    )
 	                )
 	            );

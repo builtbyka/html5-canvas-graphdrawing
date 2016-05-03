@@ -42,6 +42,9 @@ class App extends React.Component {
                 canvas.addEventListener('mousedown', ev_canvas, false);
                 canvas.addEventListener('mousemove', ev_canvas, false);
                 canvas.addEventListener('mouseup',   ev_canvas, false);
+                canvas.addEventListener('touchstart',ev_canvas, false);
+                canvas.addEventListener('touchmove',ev_canvas, false);
+                canvas.addEventListener('touchend',ev_canvas, false);
             }
             
              // The general-purpose event handler. This function just determines the mouse 
@@ -54,9 +57,13 @@ class App extends React.Component {
                 ev._x = ev.offsetX;
                 ev._y = ev.offsetY;
                 }
+               
+               let type;
+               type = ev.type;
+       
 
                 // Call the event handler of the tool.
-                var func = tool[ev.type];
+                var func = tool[type];
                 if (func) {
                 func(ev);
                 }
@@ -79,18 +86,36 @@ class App extends React.Component {
 
             // The drawing pencil.
             tools.pencil = function () {
-                var tool = this;
-                this.started = false;
+                let tool = this,
+                    rect = canvas.getBoundingClientRect();
+                window.blockMenuHeaderScroll = false;
+                this.started = false,
+                
 
                 this.mousedown = function (ev) {
                     context.beginPath();
                     context.moveTo(ev._x, ev._y);
                     tool.started = true;
                 };
+                
+                this.touchstart = function(ev){
+                    context.beginPath();
+                    context.moveTo(ev.targetTouches[0].pageX - rect.left, ev.targetTouches[0].pageY - rect.top);
+                    tool.started = true;
+                }
 
                 this.mousemove = function (ev) {
                     if (tool.started) {
+                        console.log();
                         context.lineTo(ev._x, ev._y);
+                        context.stroke();
+                     }
+                };
+                
+               this.touchmove = function (ev) {
+                   if (tool.started) {
+                        console.log();
+                        context.lineTo(ev.targetTouches[0].pageX - rect.left, ev.targetTouches[0].pageY - rect.top);
                         context.stroke();
                      }
                 };
@@ -102,19 +127,33 @@ class App extends React.Component {
                          img_update();
                      }
                  };
+                 
+                 this.touchend = function (ev) {
+                     if (tool.started) {
+                         tool.started = false;
+                         img_update();
+                     }
+                 };
             };
 
                         
             // The line tool.
             tools.line = function () {
-                var tool = this;
+                var tool = this,
+                    rect = canvas.getBoundingClientRect();
                 this.started = false;
-
                 this.mousedown = function (ev) {
-                tool.started = true;
-                tool.x0 = ev._x;
-                tool.y0 = ev._y;
+                    tool.started = true;
+                    tool.x0 = ev._x;
+                    tool.y0 = ev._y;
                 };
+                
+                this.touchstart = function (ev){
+                    tool.started = true;
+                    tool.x0 = ev.targetTouches[0].pageX - rect.left;
+                    tool.y0 = ev.targetTouches[0].pageY - rect.top;
+                    console.log(tool);
+                }
 
                 this.mousemove = function (ev) {
                 if (!tool.started) {
@@ -129,15 +168,82 @@ class App extends React.Component {
                 context.stroke();
                 context.closePath();
                 };
+                
+                this.touchmove = function(ev){
+                    if (!tool.started) {
+                        return;
+                    }
+
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                    context.beginPath();
+                    context.moveTo(tool.x0, tool.y0);
+                    context.lineTo(ev.targetTouches[0].pageX - rect.left, ev.targetTouches[0].pageY - rect.top);
+                    context.stroke();
+                    context.closePath();
+                }
 
                 this.mouseup = function (ev) {
-                if (tool.started) {
-                    tool.mousemove(ev);
-                    tool.started = false;
-                    img_update();
-                }
+                    if (tool.started) {
+                        tool.mousemove(ev);
+                        tool.started = false;
+                        img_update();
+                    }
+                };
+                
+                this.touchend = function (ev) {
+                    if (tool.started) {
+                        tool.started = false;
+                        img_update();
+                    }
                 };
             };
+            
+             // // The text tool.
+            // tools.txt = function () {
+            //     var tool = this;
+            //     this.started = false;
+            //     let lastTargetDown,
+            //     counter = 0,
+            //     x,y;
+
+            //     this.mousedown = function (ev) {
+            //         // context.beginPath();
+            //         x = ev._x;
+            //         y = ev._y;
+            //         document.getElementById("drawingTemp").style.cursor = "text";
+            //         window.addEventListener("keypress", keypress, false);
+            //         tool.started = true;
+            //     };
+                
+            //    function keypress (ev){
+            //        if(ev.which === 13){
+            //            document.getElementById("drawingTemp").style.cursor = "pointer";
+            //            x = 0;
+            //            y = 0;
+            //            tool.started = false;
+            //            return;
+            //        }
+            //         let c = String.fromCharCode(ev.which);
+            //         context.fillText(c,x+counter,y);
+            //         counter +=6;
+            //         img_update();
+            //     }
+
+            //     // this.mousemove = function (ev) {
+            //     //     if (tool.started) {
+            //     //         context.lineTo(ev._x, ev._y);
+            //     //         context.stroke();
+            //     //      }
+            //     // };
+
+            //     // this.mouseup = function (ev) {
+            //     //      if (tool.started) {
+            //     //          tool.mousemove(ev);
+            //     //          tool.started = false;
+            //     //          img_update();
+            //     //      }
+            //     //  };
+            // };
 
             init();
             this.setState({canvas:canvaso, ctx:contexto});
@@ -236,7 +342,8 @@ class App extends React.Component {
     }
 
 	render(){
-		return (       
+		return (
+            <div>       
 			<div id="sketch">
                 <label>Drawing tool:
                     <select id="dtool">
@@ -251,6 +358,7 @@ class App extends React.Component {
                     <button onClick={this.clearCanvas}>Clear</button>
                 </div>
 			</div>
+            </div>
 		)
 	}
 }

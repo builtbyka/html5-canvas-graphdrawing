@@ -1,5 +1,6 @@
 #dtool{
     margin-left: 5px;
+    height: 20px;
 }
 
 #drawing{
@@ -9,9 +10,10 @@
 }
 
 #drawingTemp{
+    border: 1px solid #ddd;
     position: absolute;
     top: 42px;
-    left: 1px;    
+    left: 0;    
 }
 
 #sketch{
