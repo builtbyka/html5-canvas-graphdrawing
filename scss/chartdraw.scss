@@ -1,0 +1,26 @@
+#dtool{
+    margin-left: 5px;
+}
+
+#drawing{
+    border: 1px solid #ddd;
+    display : block;
+    margin : 20px 0;
+}
+
+#drawingTemp{
+    position: absolute;
+    top: 42px;
+    left: 1px;    
+}
+
+#sketch{
+    margin: 0 auto;
+    overflow: auto;
+    position: relative;
+    width: 502px;
+    
+    .buttons{
+        float: right;
+    }
+}

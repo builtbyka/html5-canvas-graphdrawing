@@ -19572,8 +19572,8 @@
 	                var container = canvaso.parentNode;
 	                canvas = document.createElement('canvas');
 	                canvas.id = 'drawingTemp';
-	                canvas.width = canvaso.width;
-	                canvas.height = canvaso.height;
+	                canvas.width = canvaso.width + 100;
+	                canvas.height = canvaso.height + 100;
 	                container.appendChild(canvas);
 	
 	                context = canvas.getContext('2d');
@@ -19716,7 +19716,7 @@
 	        value: function backgroundCanvas(canvas, context) {
 	            var bw = 400,
 	                bh = 400,
-	                p = 0,
+	                p = 50,
 	                l = 0.25,
 	                cw = bw + p * 2,
 	                ch = bh + p * 2,
@@ -19757,13 +19757,13 @@
 	            context.font = "Italic 14px Georgia";
 	            context.fillStyle = '#000';
 	            context.beginPath();
-	            context.moveTo(cw / 2, 0);
-	            context.lineTo(cw / 2, ch);
-	            context.fillText("y", cw / 2 + 5, 10);
-	            context.moveTo(0, ch / 2);
-	            context.lineTo(cw, ch / 2);
+	            context.moveTo(cw / 2, 25);
+	            context.lineTo(cw / 2, ch - 25);
+	            context.fillText("y", cw / 2 + 5, 25);
+	            context.moveTo(25, ch / 2);
+	            context.lineTo(cw - 25, ch / 2);
 	            context.strokeStyle = "#000";
-	            context.fillText("x", cw - 10, ch / 2 + 15);
+	            context.fillText("x", cw - 25, ch / 2 + 15);
 	            context.stroke();
 	        }
 	    }]);
@@ -19794,7 +19794,7 @@
 	        value: function render() {
 	            return _react2.default.createElement(
 	                'div',
-	                { style: styles.sketch, id: 'sketch' },
+	                { id: 'sketch' },
 	                _react2.default.createElement(
 	                    'label',
 	                    null,
@@ -19804,19 +19804,19 @@
 	                        { id: 'dtool' },
 	                        _react2.default.createElement(
 	                            'option',
-	                            { value: 'line' },
-	                            'Line'
+	                            { value: 'pencil' },
+	                            'Pencil'
 	                        ),
 	                        _react2.default.createElement(
 	                            'option',
-	                            { value: 'pencil' },
-	                            'Pencil'
+	                            { value: 'line' },
+	                            'Line'
 	                        )
 	                    )
 	                ),
 	                _react2.default.createElement(
 	                    'canvas',
-	                    { style: styles.canvas, id: 'drawing', width: '400', height: '400' },
+	                    { id: 'drawing', width: '400', height: '400' },
 	                    _react2.default.createElement(
 	                        'p',
 	                        null,
@@ -19838,11 +19838,6 @@
 	
 	    return App;
 	}(_react2.default.Component);
-	
-	var styles = {
-	    sketch: { width: '400px', margin: '0 auto' },
-	    canvas: { display: 'block', margin: '20px 0' }
-	};
 	
 	exports.default = App;
 

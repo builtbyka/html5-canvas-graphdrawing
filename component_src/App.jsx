@@ -22,8 +22,8 @@ class App extends React.Component {
                 var container = canvaso.parentNode;
                 canvas = document.createElement('canvas');
                 canvas.id     = 'drawingTemp';
-                canvas.width  = canvaso.width;
-                canvas.height = canvaso.height;
+                canvas.width  = canvaso.width + 100;
+                canvas.height = canvaso.height + 100;
                 container.appendChild(canvas);
 
                 context = canvas.getContext('2d');
@@ -166,7 +166,7 @@ class App extends React.Component {
     backgroundCanvas(canvas, context){
         let bw = 400,
             bh = 400,
-            p = 0,
+            p = 50,
             l = 0.25,
             cw = bw + (p*2),
             ch = bh + (p*2),
@@ -207,13 +207,13 @@ class App extends React.Component {
         context.font="Italic 14px Georgia";
         context.fillStyle = '#000'
         context.beginPath();
-        context.moveTo(cw/2, 0);
-        context.lineTo(cw/2,ch);
-        context.fillText("y",cw/2+5,10);
-        context.moveTo(0, ch/2);
-        context.lineTo(cw,ch/2);
+        context.moveTo(cw/2, 25);
+        context.lineTo(cw/2,ch-25);
+        context.fillText("y",cw/2+5,25);
+        context.moveTo(25, ch/2);
+        context.lineTo(cw-25,ch/2);
         context.strokeStyle = "#000";
-        context.fillText("x",cw-10,ch/2+15);
+        context.fillText("x",cw-25,ch/2+15);
         context.stroke();
         
     }
@@ -237,14 +237,14 @@ class App extends React.Component {
 
 	render(){
 		return (       
-			<div style={styles.sketch} id="sketch">
+			<div id="sketch">
                 <label>Drawing tool:
                     <select id="dtool">
-                        <option value="line">Line</option>                  
                         <option value="pencil">Pencil</option>
+                        <option value="line">Line</option>                  
                     </select>
                 </label>
-                <canvas style={styles.canvas} id="drawing" width="400" height="400">
+                <canvas id="drawing" width="400" height="400">
 				<p>Unfortunately, your browser is currently unsupported by our web application. We are sorry for the inconvenience. Please use one of the supported browsers listed below, or draw the image you want using an offline tool.</p>
 			</canvas>
                 <div className="buttons">
@@ -253,11 +253,6 @@ class App extends React.Component {
 			</div>
 		)
 	}
-}
-
-let styles = {
-    sketch : {width: '400px', margin: '0 auto'},
-    canvas : {display : 'block',  margin : '20px 0'}
 }
 
 export default App
