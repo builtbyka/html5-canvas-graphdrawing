@@ -1,6 +1,6 @@
 #Draw on a chart - maths exercise
 
-See it working at [kerrianneellis.co.uk/chartdraw](http://kerrianneellis.co.uk/chartdraw/)
+Work in progress
 
 Run npm install to get all modules setup
 
